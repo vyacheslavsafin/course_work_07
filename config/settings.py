@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'redis',
     'django_celery_beat',
 
+    'habits',
+    'users',
+
 ]
 
 MIDDLEWARE = [
