@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'redis',
     'django_celery_beat',
+    'corsheaders',
 
     'habits',
     'users',
@@ -61,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -170,3 +172,13 @@ EMAIL_ADMIN = EMAIL_HOST_USER
 CELERY_BROKER_URL = getenv('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = getenv('CELERY_RESULT_BACKEND')
 CELERY_TIMEZONE = getenv('TIME_ZONE')
+
+CORS_ALLOWED_ORIGINS = [
+    getenv('FRONTEND_URL'),
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    getenv('FRONTEND_URL'),
+]
+
+CORS_ALLOW_ALL_ORIGINS = False

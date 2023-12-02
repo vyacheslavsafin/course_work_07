@@ -1,3 +1,4 @@
+from django_celery_beat.models import PeriodicTask
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
@@ -5,6 +6,7 @@ from habits.models import Habit
 from habits.paginators import HabitPaginator
 from habits.permissions import IsOwner
 from habits.serializers import HabitSerializer
+from habits.services import create_periodic_task
 
 
 class HabitList(generics.ListAPIView):
@@ -24,6 +26,7 @@ class HabitCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         new_habit = serializer.save()
         new_habit.owner = self.request.user
+        create_periodic_task(new_habit)
         new_habit.save()
 
 
@@ -37,6 +40,13 @@ class HabitUpdate(generics.UpdateAPIView):
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
     permission_classes = [IsAuthenticated, IsOwner]
+
+    def perform_update(self, serializer):
+        habit = serializer.save()
+        task = PeriodicTask.objects.get(args__contains=[habit.id])
+        if task:
+            task.delete()
+        create_periodic_task(habit)
 
 
 class HabitDelete(generics.DestroyAPIView):
